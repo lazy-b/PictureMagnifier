@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>放大镜</title>
+<script src="http://libs.baidu.com/jquery/1.10.0/jquery.min.js"></script>
+
+<style type="text/css">
+* {
+margin: 0;
+padding: 0
+}
+
+#demo {
+display: block;
+width: 400px;
+height: 255px;
+margin: 50px;
+position: relative;
+border: 1px solid #ccc;
+}
+
+#small-box {
+position: relative;
+z-index: 1;
+}
+
+#float-box {
+display: none;
+width: 160px;
+height: 120px;
+position: absolute;
+background: #ffffcc;
+border: 1px solid #ccc;
+filter: alpha(opacity=50);
+opacity: 0.5;
+cursor: move;
+}
+
+#mark {
+position: absolute;
+display: block;
+width: 400px;
+height: 255px;
+z-index: 10;
+background: #fff;
+filter: alpha(opacity=0);
+opacity: 0;
+cursor: move;
+}
+
+#big-box {
+display: none;
+position: absolute;
+top: 0;
+left: 460px;
+width: 400px;
+height: 300px;
+overflow: hidden;
+border: 1px solid #ccc;
+z-index: 1;;
+}
+
+#big-box img {
+position: absolute;
+z-index: 5
+}
+
+</style>
+<script>
+	$(document).ready(function(){
+		var rate=1024/400;
+		//绑定鼠标移入移出事件
+		$("#mark").on({
+			mouseover:function(){
+				$("#float-box,#big-box").css("display","block");
+			},
+			mouseout:function(){
+				$("#float-box,#big-box").css("display","none");
+			}
+		});
+		//绑定鼠标移动事件，实现放大功能
+		$("#mark").mousemove(function(e){
+			var mouseX=e.pageX;
+			var mouseY=e.pageY;
+			// 获取鼠标据demo盒子的边框的距离
+			var $demo=$("#demo").offset();
+			var mouseLeft=mouseX-$demo.left;
+			var mouseTop=mouseY-$demo.top;
+			// console.log(mouseLeft+"---"+mouseTop);
+			// 获取放大器距离demo盒子的边缘的距离
+			var $floatbox=$("#float-box");
+			var floatLeft=mouseLeft-$floatbox.width()/2;
+			var floatTop=mouseTop-$floatbox.height()/2;
+			//设置放大器相对父盒子最近能运动到哪
+			var maxLeft=$("#mark").innerWidth()-$floatbox.outerWidth();
+			var maxTop=$("#mark").innerHeight()-$floatbox.outerHeight();
+			// console.log(maxLeft+"---"+maxTop);
+			//设置放大器相对父盒子最近能运动到哪
+	        var minLeft=0;
+	        var minTop=0;
+	        if(floatLeft<minLeft){
+	        	floatLeft=minLeft;
+	        }else if(floatLeft>maxLeft){
+	        	floatLeft=maxLeft;
+	        };
+	        if(floatTop<minTop){
+	        	floatTop=minTop;
+	        }else if(floatTop>maxTop){
+	        	floatTop=maxTop;
+	        };
+	        // console.log(floatLeft+"---"+floatTop);
+	        $floatbox.css("left",floatLeft);
+	        $floatbox.css("top",floatTop);
+
+	        var $img=$("#big-box img:first");
+	        var imgLeft=-floatLeft*rate;
+	        var imgTop=-floatTop*rate;
+	        $img.css("left",imgLeft);
+	        $img.css("top",imgTop);
+		});
+	});
+</script>
+</head>
+<body>
+<div id="demo">
+	<div id="small-box">
+		<div id="mark"></div>
+		<div id="float-box"></div>
+		<img src="http://img.mukewang.com/537d77fb0001559d04000255.jpg"/>
+	</div>
+	<div id="big-box">
+		<img src="http://img.mukewang.com/537d781b0001c04210240654.jpg"/>
+	</div>
+</div>
+</body>
+</html>
